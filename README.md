@@ -1,2 +1,65 @@
 # ipfs-hypercube
-Easy to deploy IPFS (local/LAN) nodes on ARM single-board computers
+### WorkInProgress
+
+*Easy to deploy IPFS (local/LAN) nodes on ARM single-board computers.*
+
+### ODROID-X2
+* buy board from [hardkernel](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G135235611947)
+* storage [SanDisk MicroSDHC 32GB Extreme UHS-I (U3)](https://www.alza.sk/sandisk-microsdhc-32gb-extreme-uhs-i-u3-sd-adapter-gopro-edition-d2923771.htm)
+
+
+## Easy go (~2h of hacking)
+
+* [Download ubuntu 14.04lts-server from odroid.in](http://odroid.in/ubuntu_14.04lts/ubuntu-14.04lts-server-odroid-x2-20140604.img.xz)
+* `sudo dd if=ubuntu-14.04lts-server-odroid-x2-20140604.img of=/dev/disk2 bs=1m`
+* login, root:odroid
+* `cfdisk /dev/mmcblk0`
+* maximize rest of space for datastore partition, write changes to partition table
+* **reboot**
+* `mkfs.ext4 /dev/mmcblk0p3`
+* `echo '/dev/mmcblk0p3 /mnt ext4 rw,relatime,data=ordered 0 0' >> /etc/fstab`
+* `mount /dev/mmcblk0p3 /mnt/`
+* [**go for ipfs, yay!**](https://ipfs.io/docs/install/)
+(I had go through secret level http://dist.ipfs.io/ and open very secret doors => http://dist.ipfs.io/go-ipfs/v0.4.0-dev/go-ipfs_v0.4.0-dev_linux-arm.tar.gz)
+* `mv ipfs /usr/local/bin`
+* change in config to /mnt/ipfs/datastore ..
+```json
+  "Datastore": {
+    "Type": "leveldb",
+    "Path": "/mnt/ipfs/datastore",
+    "StorageMax": "20GB",
+    "StorageGCWatermark": 90,
+    "GCPeriod": "1h",
+    "Params": null,
+    "NoSync": false
+  },
+```
+* `mkdir -p /mnt/ipfs/datastore`
+* `apt-get install ufw`
+* `ufw disable`
+* `ipfs init`
+* `ipfs daemon`
+
+and some pointless information, yaay :D
+```
+root@odroid-server:~# ipfs id
+{
+	"ID": "QmbzAwAqLzpEkCT98n8vYZkDGbbZZEkZzumYLyyRVJJfiz",
+	"PublicKey": "CAASpgIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC77y7FK2NHq9Ty+bOCFVhcKq6rmwQWc3pQLdeMfERzsuoEYLbZOt03nEmD0/YuvzGVdV1XVtDapdnIyXenVTrDKc8Dnig4kN6aQV4bFODx27vtB7Qw+zvHGZXDW87DAhkk3aS208D+UpvCkXBoG0sDSW5S5vMNpBXoscsEhiAGbBopxxw3Ua+/mTQjYrLq0eGUAvzvKQ1HVe2sq2arUNjvS01cIL8npzgYcBYjcIQoQgGsR1Pc4IOFehOM64bDooG2k0jTZFS63HhJxLuEXQ7soolNR+4yJcDAXHj1Wp/Lpc47EE8BsolUwcON2Od9RKQlEUBhtLHp1ibMVukzaVKTAgMBAAE=",
+	"Addresses": [
+		"/ip4/127.0.0.1/tcp/4001/ipfs/QmbzAwAqLzpEkCT98n8vYZkDGbbZZEkZzumYLyyRVJJfiz",
+		"/ip4/192.168.13.215/tcp/4001/ipfs/QmbzAwAqLzpEkCT98n8vYZkDGbbZZEkZzumYLyyRVJJfiz",
+		"/ip6/::1/tcp/4001/ipfs/QmbzAwAqLzpEkCT98n8vYZkDGbbZZEkZzumYLyyRVJJfiz"
+	],
+	"AgentVersion": "go-ipfs/0.4.0-dev",
+	"ProtocolVersion": "ipfs/0.1.0"
+
+root@odroid-server:~# ipfs diag sys
+  {"diskinfo":{"free_space":2.500820992e+09,"fstype":"61267","total_space":2.33693184e+09},"environment":{"GOPATH":"","IPFS_PATH":""},"ipfs_commit":"","ipfs_version":"0.4.0-dev","memory":{"swap":0,"virt":8.02464e+08},"net":{"interface_addresses":["/ip4/127.0.0.1","/ip4/192.168.13.215","/ip6/::1","/ip6/fe80::34e6:6aff:fe0e:97b1"]},"runtime":{"arch":"arm","compiler":"gc","gomaxprocs":3,"numcpu":4,"numgoroutines":202,"os":"linux","version":"go1.5.3"}}
+
+root@odroid-server:~# ipfs swarm peers|wc -l
+26
+```
+Credits goes to guys on #ipfs @ freenode, need fix traversal/discovery of external IP
+
+feel free to connect to my ipfs node https://ipfs.io/ipfs/QmVsrcQiXGD1FNYeKxxVBLor1dmszvr1xnv6Jgq61jhhci/paste
