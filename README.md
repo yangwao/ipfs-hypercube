@@ -96,6 +96,8 @@ exec start-stop-daemon --start --chuid $USER --exec /usr/local/bin/ipfs -- daemo
 Now should IPFS daemon start on every boot, cheers
 
 and some pointless information, yaay :D
+
+![ODROID-X2 running IPFS](https://ipfs.pics/ipfs/QmRcA7bnBpj4E65aG9JRxGw1g2zBjAfYpA6TocT1qtsoAa)
 ```
 root@odroid-server:~# ipfs id
 {
