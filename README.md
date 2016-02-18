@@ -1,27 +1,63 @@
 # ipfs-hypercube
 ### WorkInProgress
 
+## Aim of Project
 *Easy to deploy IPFS (local/LAN) nodes on ARM single-board computers.*
+
+Boards that I plan document and deploy
+* Hardkernel ODROID-X2 (tested/running)
+* TP-LINK TL-MR-3020 (have it, onboard wifi)
+* Hardkernel ODROID-C2 ([Shipping date is March 4, 2016](http://forum.odroid.com/viewtopic.php?f=135&t=18683))
+
 
 ### ODROID-X2
 * buy board from [hardkernel](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G135235611947)
 * storage [SanDisk MicroSDHC 32GB Extreme UHS-I (U3)](https://www.alza.sk/sandisk-microsdhc-32gb-extreme-uhs-i-u3-sd-adapter-gopro-edition-d2923771.htm)
 
 
-## Easy go (~2h of hacking)
+#### Easy go (quick & dirty, ~2h of hacking)
 
-* [Download ubuntu 14.04lts-server from odroid.in](http://odroid.in/ubuntu_14.04lts/ubuntu-14.04lts-server-odroid-x2-20140604.img.xz)
-* `sudo dd if=ubuntu-14.04lts-server-odroid-x2-20140604.img of=/dev/disk2 bs=1m`
-* login, root:odroid
-* `cfdisk /dev/mmcblk0`
-* maximize rest of space for datastore partition, write changes to partition table
-* **reboot**
-* `mkfs.ext4 /dev/mmcblk0p3`
-* `echo '/dev/mmcblk0p3 /mnt ext4 rw,relatime,data=ordered 0 0' >> /etc/fstab`
-* `mount /dev/mmcblk0p3 /mnt/`
+##### Prepare board
+[Download ubuntu 14.04lts-server from odroid.in](http://odroid.in/ubuntu_14.04lts/ubuntu-14.04lts-server-odroid-x2-20140604.img.xz)
+Then extract .xz
+
+`xz -d ubuntu-14.04lts-server-odroid-x2-20140604.img.xz`
+
+Push image to SD card
+
+`sudo dd if=ubuntu-14.04lts-server-odroid-x2-20140604.img of=/dev/disk2 bs=1m`
+
+Insert SD card, boot your X2, login credentials are `root:odroid`
+
+Then create rest of space for datastore
+
+`cfdisk /dev/mmcblk0`
+
+maximize rest of space for datastore partition, write changes to partition table
+
+`reboot`
+
+Create filesystem at new partition
+
+`mkfs.ext4 /dev/mmcblk0p3`
+
+`echo '/dev/mmcblk0p3 /mnt ext4 rw,relatime,data=ordered 0 0' >> /etc/fstab`
+
+`mount /dev/mmcblk0p3 /mnt/`
+
+##### IPFS part
 * [**go for ipfs, yay!**](https://ipfs.io/docs/install/)
 (I had go through secret level http://dist.ipfs.io/ and open very secret doors => http://dist.ipfs.io/go-ipfs/v0.4.0-dev/go-ipfs_v0.4.0-dev_linux-arm.tar.gz)
 * `mv ipfs /usr/local/bin`
+* `mkdir -p /mnt/ipfs/datastore`
+
+Turn off firewall (even iptables are missing in image)
+* `apt-get install ufw`
+* `ufw disable`
+
+Initialize IPFS, it will generates your privkey and other stuff
+* `ipfs init`
+
 * change in config to /mnt/ipfs/datastore ..
 ```json
   "Datastore": {
@@ -34,11 +70,30 @@
     "NoSync": false
   },
 ```
-* `mkdir -p /mnt/ipfs/datastore`
-* `apt-get install ufw`
-* `ufw disable`
-* `ipfs init`
+You can run ipfs daemon from terminal (or put it in screen/tmux/byobu) or use my upstart script
+
 * `ipfs daemon`
+
+Upstart script for ubuntu 14.04 /etc/init/ipfs.conf
+
+
+```
+#!upstart
+description "ipfs"
+
+#env USER=nobody
+env USER=root # need change this
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+respawn limit 2 5
+
+exec start-stop-daemon --start --chuid $USER --exec /usr/local/bin/ipfs -- daemon >> /var/log/ipfs.log 2>&1
+```
+
+Now should IPFS daemon start on every boot, cheers
 
 and some pointless information, yaay :D
 ```
