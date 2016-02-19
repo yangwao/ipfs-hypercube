@@ -29,21 +29,20 @@ Push image to SD card
 
 Insert SD card, boot your X2, login credentials are `root:odroid`
 
-Then create rest of space for datastore
+Download [odroid-utility](https://github.com/mdrjr/odroid-utility) and resize rootfs && update your kernel to latest
 
-`cfdisk /dev/mmcblk0`
+```
+sudo -s
 
-maximize rest of space for datastore partition, write changes to partition table
+wget -O /usr/local/bin/odroid-utility.sh https://raw.githubusercontent.com/mdrjr/odroid-utility/master/odroid-utility.sh
 
-`reboot`
+chmod +x /usr/local/bin/odroid-utility.sh
 
-Create filesystem at new partition
+odroid-utility.sh
 
-`mkfs.ext4 /dev/mmcblk0p3`
+reboot
 
-`echo '/dev/mmcblk0p3 /mnt ext4 rw,relatime,data=ordered 0 0' >> /etc/fstab`
-
-`mount /dev/mmcblk0p3 /mnt/`
+```
 
 ##### IPFS part
 * [**go for ipfs, yay!**](https://ipfs.io/docs/install/)
@@ -58,18 +57,6 @@ Turn off firewall (even iptables are missing in image)
 Initialize IPFS, it will generates your privkey and other stuff
 * `ipfs init`
 
-* change in config to /mnt/ipfs/datastore ..
-```json
-  "Datastore": {
-    "Type": "leveldb",
-    "Path": "/mnt/ipfs/datastore",
-    "StorageMax": "20GB",
-    "StorageGCWatermark": 90,
-    "GCPeriod": "1h",
-    "Params": null,
-    "NoSync": false
-  },
-```
 You can run ipfs daemon from terminal (or put it in screen/tmux/byobu) or use my upstart script
 
 * `ipfs daemon`
