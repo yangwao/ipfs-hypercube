@@ -106,4 +106,8 @@ root@odroid-server:~# ipfs swarm peers|wc -l
 ```
 Credits goes to guys on #ipfs @ freenode, need fix traversal/discovery of external IP
 
+Some quick fixies 
+
+```rm -rf $GOPATH/src/gx and try it again```
+
 feel free to connect to my ipfs node https://ipfs.io/ipfs/QmVsrcQiXGD1FNYeKxxVBLor1dmszvr1xnv6Jgq61jhhci/paste
