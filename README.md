@@ -109,6 +109,6 @@ Credits goes to guys on #ipfs @ freenode, need fix traversal/discovery of extern
 Some quick fixies 
 
 ```rm -rf $GOPATH/src/gx and try it again```
-```go get -u github.com/whyrusleeping/gx and try it again```
+```go get -u github.com/whyrusleeping/gx and go get -u github.com/whyrusleeping/gx-go try it again```
 
 feel free to connect to my ipfs node https://ipfs.io/ipfs/QmVsrcQiXGD1FNYeKxxVBLor1dmszvr1xnv6Jgq61jhhci/paste
