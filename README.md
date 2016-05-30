@@ -3,6 +3,7 @@
 
 ## Aim of Project
 *Easy to deploy IPFS (local/LAN) nodes on ARM single-board computers.*
+* yay, been refered from [Apollo-NG project Argus](https://apollo.open-resource.org/lab:argus?&#use-cases)
 
 Boards that I plan document and deploy
 * Hardkernel ODROID-X2 (tested/running)
