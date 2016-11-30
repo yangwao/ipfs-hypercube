@@ -3,6 +3,7 @@
 
 ## Aim of Project
 *Easy to deploy IPFS (local/LAN) nodes on ARM single-board computers.*
+* yay, been refered from [Apollo-NG project Argus](https://apollo.open-resource.org/lab:argus?&#use-cases)
 
 Boards that I plan document and deploy
 * Hardkernel ODROID-X2 (tested/running)
@@ -105,5 +106,10 @@ root@odroid-server:~# ipfs swarm peers|wc -l
 26
 ```
 Credits goes to guys on #ipfs @ freenode, need fix traversal/discovery of external IP
+
+Some quick fixies 
+
+```rm -rf $GOPATH/src/gx and try it again```
+```go get -u github.com/whyrusleeping/gx and go get -u github.com/whyrusleeping/gx-go try it again```
 
 feel free to connect to my ipfs node https://ipfs.io/ipfs/QmVsrcQiXGD1FNYeKxxVBLor1dmszvr1xnv6Jgq61jhhci/paste
